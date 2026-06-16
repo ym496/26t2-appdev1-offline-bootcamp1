@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask,request
 
 app = Flask(__name__)
 
@@ -6,9 +6,11 @@ app = Flask(__name__)
 def hello():
     return "Hello, World!"
 
-@app.route("/about")
-def about():
-    return "<h1>About Page</h1><p>This is the about page of the Flask application.</p>"
+@app.route("/<username>/about",methods=["GET","POST"])
+def about(username):
+    if request.method == "POST":
+        print("Received a POST request to the /about route.")
+    return f"<h1>About Page</h1><p>This is the about page of the Flask application.</p>"
 
 @app.route("/user/<username>")
 def user_profile(username):
@@ -54,6 +56,13 @@ def show_user_playlist(username, playlist_name):
     </ul>
     <a href="/">Back Home</a>
     """
+
+@app.route("/admin/add",methods=["POST"])
+def add_track():
+    track_name = request.form.get("track_name")
+    username = request.form.get("username")
+
+    return f"<h2>Track added successfully!</h2><p>Track: {track_name}</p><p>User: {username}</p><p>Playlist: {playlist_name}</p>"
 
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=5000, debug=True)
