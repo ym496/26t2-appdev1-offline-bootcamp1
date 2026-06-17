@@ -29,6 +29,11 @@ ADMIN_METRICS = {
     ]
 }
 
+SONGS = {
+    1: {"title": "Blinding Lights", "artist": "The Weeknd","lyrics": "I've been tryna call ..."},
+    2: {"title": "Bohemian Rhapsody", "artist": "Queen", "lyrics": "Is this the real life? Is this just fantasy? ..."},
+}
+
 @app.route('/')
 def home():
     return render_template('home.html')
@@ -92,6 +97,15 @@ def admin_panel():
         flagged_items=ADMIN_METRICS["flagged"]
     )
 
+@app.route('/songs')
+def songs():
+    return render_template('songs.html', songs=SONGS)
+
+@app.route('/songs/<int:song_id>')
+def song_details(song_id):
+    song = SONGS[song_id]
+    if song:
+        return render_template('song_info.html', song=song)
 
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=5000, debug=True)
