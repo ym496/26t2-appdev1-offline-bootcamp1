@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}Artist Portal - {{ artist_name }}{% endblock %}
+
+{% block content %}
+    <h1>👨‍🎤 Creator Studio: {{ artist_name }}</h1>
+    <p>Manage your public tracks, albums, and release pipelines here.</p>
+
+    <section style="margin-bottom: 30px;">
+        <h3>Upload New Track Release</h3>
+        <form method="POST" action="/artist/{{ artist_name }}/upload">
+            <label for="track_title">Song Title:</label><br>
+            <input type="text" id="track_title" name="track_title" placeholder="e.g., Save Your Tears" required><br><br>
+
+            <label for="track_genre">Genre Classification:</label><br>
+            <input type="text" id="track_genre" name="track_genre" placeholder="e.g., Synth-pop" required><br><br>
+
+            <button type="submit">Publish Track Release</button>
+        </form>
+    </section>
+
+    <section>
+        <h3>Your Published Tracks</h3>
+        <table border="1" cellpadding="8">
+            <thead>
+                <tr>
+                    <th>Track Name</th>
+                    <th>Genre</th>
+                    <th>Stream Metrics</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for song in catalog %}
+                <tr>
+                    <td><strong>{{ song.title }}</strong></td>
+                    <td>{{ song.genre }}</td>
+                    <td>📈 {{ song.streams }} streams</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="3">No published songs found. Use the form above to release your first track!</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+{% endblock %}

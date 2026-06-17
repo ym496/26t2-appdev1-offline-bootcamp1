@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ profile.name }}'s Dashboard{% endblock %}
+
+{% block content %}
+    <div>
+        <h1>Welcome Back, {{ profile.name }}!</h1>
+        <p>Account Role: <strong>Listener</strong> | Member Status: <em>{{ profile.tier }}</em></p>
+    </div>
+
+    <section>
+        <h3>Your Favorite Tracks</h3>
+        <table border="1" cellpadding="8">
+            <thead>
+                <tr>
+                    <th>Track Title</th>
+                    <th>Artist</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for track in profile.favorites %}
+                <tr>
+                    <td><strong>{{ track.title }}</strong></td>
+                    <td>{{ track.artist }}</td>
+                    <td><button>▶ Play</button></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+{% endblock %}

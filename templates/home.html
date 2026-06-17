@@ -1,20 +1,33 @@
 {% extends 'base.html' %}
 
-{% block title %}Welcome{% endblock %}
+{% block title %}Symphony - Gate Entry Portal{% endblock %}
 
 {% block content %}
-    <h1>Welcome to Symphony Music</h1>
-    <p>Your personal gateway to infinite soundscapes.</p>
+    <div style="text-align: center; margin-bottom: 40px;">
+        <h1>Welcome to Symphony Media</h1>
+        <p>Your portal into customized sonic environments.</p>
+    </div>
 
-    <hr>
-    <h3>Login to Your Account</h3>
-    <form method="POST" action="/login-submit">
-        <label for="username">Username:</label><br>
-        <input type="text" id="username" name="username" required><br><br>
+    <div style="max-width: 400px; margin: 0 auto; border: 1px solid #000; padding: 25px;">
+        <h3 style="text-align: center; margin-top: 0;">Account Portal Entry</h3>
         
-        <label for="password">Password:</label><br>
-        <input type="password" id="password" name="password" required><br><br>
-        
-        <button type="submit">Login</button>
-    </form>
+        <form method="POST" action="/login-submit">
+            <label for="username">Profile Username:</label><br>
+            <input type="text" id="username" name="username" placeholder="e.g., Yogendra" required style="width: 100%; padding: 5px; margin-bottom: 15px;"><br>
+
+            <label for="password">Security Password:</label><br>
+            <input type="password" id="password" name="password" placeholder="••••••••" required style="width: 100%; padding: 5px; margin-bottom: 15px;"><br>
+
+            <label for="user_role">Identify Your Profile Role:</label><br>
+            <select id="user_role" name="user_role" style="width: 100%; padding: 5px; margin-bottom: 20px;">
+                <option value="listener">🎵 Listener / Standard User</option>
+                <option value="artist">👨‍🎤 Verified Creator / Artist</option>
+                <option value="admin">🛡️ Platform Administrator</option>
+            </select><br>
+
+            <button type="submit" style="width: 100%; padding: 8px; font-weight: bold; cursor: pointer;">
+                Authorize & Connect
+            </button>
+        </form>
+    </div>
 {% endblock %}
