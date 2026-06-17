@@ -1,15 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Symphony - Welcome</title>
-</head>
-<body>
-    <nav>
-        <a href="/">Home</a>
-    </nav>
-    <hr>
+{% extends 'base.html' %}
 
+{% block title %}Welcome{% endblock %}
+
+{% block content %}
     <h1>Welcome to Symphony Music</h1>
     <p>Your personal gateway to infinite soundscapes.</p>
 
@@ -17,17 +10,11 @@
     <h3>Login to Your Account</h3>
     <form method="POST" action="/login-submit">
         <label for="username">Username:</label><br>
-        <input type="text" id="username" name="username" placeholder="Enter your name" required><br><br>
+        <input type="text" id="username" name="username" required><br><br>
         
         <label for="password">Password:</label><br>
-        <input type="password" id="password" name="password" placeholder="Enter password" required><br><br>
+        <input type="password" id="password" name="password" required><br><br>
         
         <button type="submit">Login</button>
     </form>
-
-<footer>
-    <hr>
-    <p>&copy; last_updated: {{last_updated}}</p>
-</footer>
-</body>
-</html>
+{% endblock %}

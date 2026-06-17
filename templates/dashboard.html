@@ -1,15 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Symphony - Dashboard</title>
-</head>
-<body>
-    <nav>
-        <a href="/">Logout</a>
-    </nav>
-    <hr>
+{% extends 'base.html' %}
 
+{% block title %}{{ user_name }}'s Space - Symphony{% endblock %}
+
+{% block content %}
     <h1>Hello, {{ user_name }}!</h1>
     <p>Account Type: <strong>{{ subscription_status }}</strong></p>
 
@@ -18,8 +11,6 @@
     <ul>
         {% for playlist in playlists %}
             <li>📂 {{ playlist }}</li>
-        {% else %}
-            <li>No playlists found. Create one to get started!</li>
         {% endfor %}
     </ul>
 
@@ -41,5 +32,4 @@
             {% endfor %}
         </tbody>
     </table>
-</body>
-</html>
+{% endblock %}
