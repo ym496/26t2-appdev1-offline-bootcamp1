@@ -1,5 +1,3 @@
 Create '/song/<int:id>' route that
 should show song details
-based on the id.
-details should include: 
-song name, artist, lyrics.
+based on 
