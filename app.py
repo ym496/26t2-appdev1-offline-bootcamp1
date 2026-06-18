@@ -1,5 +1,7 @@
 from flask import Flask,request,render_template, redirect
 from flask_sqlalchemy import SQLAlchemy
+from werkzeug.security import generate_password_hash
+import os
 
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///music.db"
@@ -30,54 +32,6 @@ def login_submit():
         
     return redirect('/')
     
-# @app.route('/dashboard/<username>')
-# def user_dashboard(username):
-#     user_key = username.lower()
-#     if user_key in USER_PROFILES:
-#         return render_template('user_dashboard.html', profile=USER_PROFILES[user_key])
-#     return "<h1>User Workspace Profile Not Found</h1>", 404
-
-# @app.route('/artist/<artist_name>')
-# def artist_portal(artist_name):
-#     artist_key = artist_name.lower()
-#     catalog = ARTIST_CATALOGS.get(artist_key, [])
-#     return render_template('artist_portal.html', artist_name=artist_name.title(), catalog=catalog)
-
-# @app.route('/artist/<artist_name>/upload', methods=['POST'])
-# def artist_upload(artist_name):
-#     artist_key = artist_name.lower()
-    
-#     title = request.form.get('track_title')
-#     genre = request.form.get('track_genre')
-    
-#     if title and genre:
-#         new_track = {"title": title, "genre": genre, "streams": "0"}
-        
-#         if artist_key not in ARTIST_CATALOGS:
-#             ARTIST_CATALOGS[artist_key] = []
-        
-#         ARTIST_CATALOGS[artist_key].append(new_track)
-        
-#     return redirect(f'/artist/{artist_key}')
-
-# @app.route('/admin')
-# def admin_panel():
-#     return render_template(
-#         'admin_panel.html', 
-#         metrics=ADMIN_METRICS["stats"], 
-#         flagged_items=ADMIN_METRICS["flagged"]
-#     )
-
-# @app.route('/songs')
-# def songs():
-#     return render_template('songs.html', songs=SONGS)
-
-# @app.route('/songs/<int:song_id>')
-# def song_details(song_id):
-#     song = SONGS[song_id]
-#     if song:
-#         return render_template('song_info.html', song=song)
-
 class User(db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
@@ -105,6 +59,18 @@ class PlaylistTrack(db.Model):
     playlist_id = db.Column(db.Integer, db.ForeignKey('playlists.id'), nullable=False)
     song_id = db.Column(db.Integer, db.ForeignKey('songs.id'), nullable=False)
 
+def init_database():
+    os.makedirs(app.instance_path, exist_ok=True)
+    
+    with app.app_context():
+        db.create_all()        
+        admin_user = User.query.filter_by(role='admin').first()
+        if not admin_user:
+            hashed_password = generate_password_hash("admin")
+            seeded_admin = User(username='admin', password=hashed_password, role='admin')
+            db.session.add(seeded_admin)
+            db.session.commit()
 
 if __name__ == '__main__':
+    init_database()
     app.run(host='127.0.0.1', port=5000, debug=True)
