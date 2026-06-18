@@ -94,6 +94,26 @@ def user_dashboard(username):
     }
     return render_template('user_dashboard.html', profile=profile_context)
 
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        user_role = request.form.get('user_role')
+        if user_role == 'admin':
+            return redirect('/register')
+        existing_user = User.query.filter_by(username=username).first()
+        if existing_user:
+            return redirect('/register')
+
+        new_user = User(username=username, password=password, role=user_role)
+        db.session.add(new_user)
+        db.session.commit()
+
+        return redirect('/')
+
+    return render_template('register.html')
+
 if __name__ == '__main__':
     init_database()
     app.run(host='127.0.0.1', port=5000, debug=True)
