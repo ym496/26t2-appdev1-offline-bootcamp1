@@ -10,9 +10,9 @@ def seed_database():
         db.create_all()
         
         print("🌱 Injecting core user accounts...")
-        admin = User(username="admin", password="adminpass", role="admin")
-        artist = User(username="mujic guy", password="artistpass", role="artist")
-        listener = User(username="ym496", password="userpass", role="listener")
+        admin = User(username="admin", password="admin", role="admin")
+        artist = User(username="artist", password="123", role="artist")
+        listener = User(username="ym496", password="123", role="listener")
         
         db.session.add_all([admin, artist, listener])
         db.session.commit() 

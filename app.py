@@ -6,34 +6,6 @@ import os
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///music.db"
 db = SQLAlchemy(app)
-
-@app.route('/')
-def home():
-    return render_template('home.html')
-
-@app.route('/login-submit', methods=['POST'])
-def login_submit():
-    username = request.form.get('username')
-    password = request.form.get('password')
-    selected_role = request.form.get('user_role')
-    
-    if not username or not password:
-        return redirect('/')
-
-    user = User.query.filter_by(username=username, role=selected_role).first()
-    
-    if user:
-        session['user_id'] = user.id
-        session['username'] = user.username
-        
-        if selected_role == 'admin':
-            return redirect('/admin')
-        elif selected_role == 'artist':
-            return redirect(f'/artist/{user.username}')
-        elif selected_role == 'listener':
-            return redirect(f'/dashboard/{user.username}')
-            
-    return redirect('/')
     
 class User(db.Model):
     __tablename__ = 'users'
@@ -73,6 +45,54 @@ def init_database():
             seeded_admin = User(username='admin', password=hashed_password, role='admin')
             db.session.add(seeded_admin)
             db.session.commit()
+
+
+# Routes 
+
+@app.route('/')
+def home():
+    return render_template('home.html')
+
+@app.route('/login-submit', methods=['POST'])
+def login_submit():
+    username = request.form.get('username')
+    password = request.form.get('password')
+    selected_role = request.form.get('user_role')
+    
+    if not username or not password:
+        return redirect('/')
+
+    user = User.query.filter_by(username=username, role=selected_role).first()
+    
+    if user:
+        
+        if selected_role == 'admin':
+            return redirect('/admin')
+        elif selected_role == 'artist':
+            return redirect(f'/artist/{user.username}')
+        elif selected_role == 'listener':
+            return redirect(f'/dashboard/{user.username}')
+            
+    return redirect('/')
+
+@app.route('/admin')
+def admin_panel():
+    metrics_context = {
+        'total_users': User.query.filter_by(role='listener').count(),
+        'total_artists': User.query.filter_by(role='artist').count()
+    }
+    return render_template('admin_panel.html', metrics=metrics_context)
+
+@app.route('/dashboard/<username>')
+def user_dashboard(username):
+    user_record = User.query.filter_by(username=username, role='listener').first_or_404()
+    
+    profile_context = {
+        'name': user_record.username,
+        'tier': 'Premium Member',
+        'favorites': Song.query.all()
+    }
+    return render_template('user_dashboard.html', profile=profile_context)
 
 if __name__ == '__main__':
     init_database()
