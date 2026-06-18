@@ -20,16 +20,19 @@ def login_submit():
     if not username or not password:
         return redirect('/')
 
-    if selected_role == 'admin':
-        return redirect('/admin')
+    user = User.query.filter_by(username=username, role=selected_role).first()
+    
+    if user:
+        session['user_id'] = user.id
+        session['username'] = user.username
         
-    elif selected_role == 'artist':
-        artist_slug = username.lower().replace(" ", "-")
-        return redirect(f'/artist/{artist_slug}')
-        
-    elif selected_role == 'listener':
-        return redirect(f'/dashboard/{username.lower()}')
-        
+        if selected_role == 'admin':
+            return redirect('/admin')
+        elif selected_role == 'artist':
+            return redirect(f'/artist/{user.username}')
+        elif selected_role == 'listener':
+            return redirect(f'/dashboard/{user.username}')
+            
     return redirect('/')
     
 class User(db.Model):
