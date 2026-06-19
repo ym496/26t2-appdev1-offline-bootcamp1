@@ -114,6 +114,55 @@ def register():
 
     return render_template('register.html')
 
+@app.route('/artist/<username>', methods=['GET', 'POST'])
+def artist_portal(username):
+    artist_user = User.query.filter_by(username=username, role='artist').first_or_404()
+    
+    if request.method == 'POST':
+        title = request.form.get('track_title')
+        genre = request.form.get('track_genre')
+        lyrics = request.form.get('track_lyrics')
+        new_song = Song(title=title, genre=genre, lyrics=lyrics, artist_id=artist_user.id)
+        db.session.add(new_song)
+        db.session.commit()
+        return redirect(f'/artist/{username}')
+        
+    catalog_songs = Song.query.filter_by(artist_id=artist_user.id).all()
+    return render_template('artist_portal.html', artist_name=artist_user.username, catalog=catalog_songs)
+
+
+@app.route('/song/<int:song_id>')
+def song_detail(song_id):
+    song = Song.query.get_or_404(song_id)
+    artist_user = User.query.get(song.artist_id)
+    return render_template('song_detail.html', song=song, artist_name=artist_user.username)
+
+
+@app.route('/song/update/<int:song_id>', methods=['POST'])
+def update_song(song_id):
+    song_to_edit = Song.query.get_or_404(song_id)
+    
+    new_title = request.form.get('updated_title')
+    new_genre = request.form.get('updated_genre')
+    
+    if new_title:
+        song_to_edit.title = new_title
+    if new_genre:
+        song_to_edit.genre = new_genre
+        
+    db.session.commit()
+    
+    uploader_account = User.query.get(song_to_edit.artist_id)
+    return redirect(f'/artist/{uploader_account.username}')
+
+@app.route('/song/delete/<int:song_id>', methods=['POST'])
+def delete_song(song_id):
+    song_to_destroy = Song.query.get_or_404(song_id)
+    uploader_account = User.query.get(song_to_destroy.artist_id)    
+    db.session.delete(song_to_destroy)    
+    db.session.commit()
+    return redirect(f'/artist/{uploader_account.username}')
+
 if __name__ == '__main__':
     init_database()
     app.run(host='127.0.0.1', port=5000, debug=True)

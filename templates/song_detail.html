@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ song.title }} Details{% endblock %}
+
+{% block content %}
+    <h1>🎵 Track Metadata Overview</h1>
+    <p><a href="/artist/{{ artist_name }}">⬅️ Back to {{ artist_name }}'s Portal</a></p>
+    <hr>
+
+    <h2>Title: "{{ song.title }}"</h2>
+    <h3>Artist Creator: {{ artist_name }}</h3>
+    <p><strong>Genre Classification:</strong> {{ song.genre if song.genre else "Unspecified" }}</p>
+    
+    <hr>
+    <h3>📜 Composition Lyrics</h3>
+    <pre>{{ song.lyrics if song.lyrics else "No lyrical compositions have been uploaded for this track." }}</pre>
+{% endblock %}

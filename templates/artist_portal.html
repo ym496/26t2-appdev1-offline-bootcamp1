@@ -5,43 +5,61 @@
 {% block content %}
     <h1>👨‍🎤 Creator Studio: {{ artist_name }}</h1>
     <p>Manage your public tracks, albums, and release pipelines here.</p>
+    <hr>
+
+    <h3>🎵 Your Published Tracks</h3>
+    <table border="1" cellpadding="8">
+        <thead>
+            <tr>
+                <th>Track Name (Click to View)</th>
+                <th>Genre</th>
+                <th>Quick Edit (UPDATE)</th>
+                <th>Administrative Action (DELETE)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for song in catalog %}
+            <tr>
+                <td><a href="/song/{{ song.id }}"><strong>{{ song.title }}</strong></a></td>
+                <td>{{ song.genre }}</td>
+                
+                <td>
+                    <form method="POST" action="/song/update/{{ song.id }}" style="display:inline;">
+                        <input type="text" name="updated_title" placeholder="New title">
+                        <input type="text" name="updated_genre" placeholder="New genre">
+                        <button type="submit">✏️ Save Changes</button>
+                    </form>
+                </td>
+                
+                <td>
+                    <form method="POST" action="/song/delete/{{ song.id }}" style="display:inline;">
+                        <button type="submit" style="color:red;" onclick="return confirm('Delete this track permanently?');">🗑️ Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="4">No published songs found. Use the form below to release your first track!</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <hr>
 
     <section style="margin-bottom: 30px;">
-        <h3>Upload New Track Release</h3>
-        <form method="POST" action="/artist/{{ artist_name }}/upload">
+        <h3>➕ Upload New Track Release</h3>
+        <form method="POST" action="/artist/{{ artist_name }}">
             <label for="track_title">Song Title:</label><br>
-            <input type="text" id="track_title" name="track_title" placeholder="e.g., Save Your Tears" required><br><br>
+            <input type="text" id="track_title" name="track_title" required><br><br>
 
             <label for="track_genre">Genre Classification:</label><br>
-            <input type="text" id="track_genre" name="track_genre" placeholder="e.g., Synth-pop" required><br><br>
+            <input type="text" id="track_genre" name="track_genre"><br><br>
+
+            <label for="track_lyrics">Song Lyrics:</label><br>
+            <textarea id="track_lyrics" name="track_lyrics" rows="5" cols="40" placeholder="Type lines here..."></textarea><br><br>
 
             <button type="submit">Publish Track Release</button>
         </form>
-    </section>
-
-    <section>
-        <h3>Your Published Tracks</h3>
-        <table border="1" cellpadding="8">
-            <thead>
-                <tr>
-                    <th>Track Name</th>
-                    <th>Genre</th>
-                    <th>Stream Metrics</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for song in catalog %}
-                <tr>
-                    <td><strong>{{ song.title }}</strong></td>
-                    <td>{{ song.genre }}</td>
-                    <td>📈 {{ song.streams }} streams</td>
-                </tr>
-                {% else %}
-                <tr>
-                    <td colspan="3">No published songs found. Use the form above to release your first track!</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
     </section>
 {% endblock %}
