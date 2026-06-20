@@ -1,7 +1,7 @@
-from flask import request, render_template, redirect
+from flask import request, render_template, redirect, session
 from flask import current_app as app
 from application.models import db, User, Song
-from werkzeug.security import generate_password_hash
+from werkzeug.security import generate_password_hash, check_password_hash
 
 @app.route('/')
 def home():
@@ -17,34 +17,46 @@ def login_submit():
         return redirect('/')
 
     user = User.query.filter_by(username=username, role=selected_role).first()
+
     
     if user:
-        if selected_role == 'admin':
-            return redirect('/admin')
-        elif selected_role == 'artist':
-            return redirect(f'/artist/{user.username}')
-        elif selected_role == 'listener':
-            return redirect(f'/dashboard/{user.username}')
+        session['user_id'] = user.id
+        session['role'] = user.role
+        session['username'] = user.username
+        
+        if user.role == 'admin': return redirect('/admin')
+        elif user.role == 'artist': return redirect('/artist/dashboard')
+        elif user.role == 'listener': return redirect('/listener/dashboard')
             
     return redirect('/')
 
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect('/')
 @app.route('/admin')
 def admin_panel():
     metrics_context = {
         'total_users': User.query.filter_by(role='listener').count(),
         'total_artists': User.query.filter_by(role='artist').count()
     }
+    print(session['username'])
     return render_template('admin_panel.html', metrics=metrics_context)
 
 @app.route('/dashboard/<username>')
 def user_dashboard(username):
     user_record = User.query.filter_by(username=username, role='listener').first_or_404()
+    search_query = request.args.get('q', '').strip()
+    if search_query:
+        songs = Song.query.filter(Song.title.ilike(f"%{search_query}%")).all()
+    else:
+        songs = Song.query.all()
     profile_context = {
         'name': user_record.username,
         'tier': 'Premium Member',
-        'favorites': Song.query.all()
+        'favorites': songs
     }
-    return render_template('user_dashboard.html', profile=profile_context)
+    return render_template('user_dashboard.html', profile=profile_context,current_search=search_query)
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -58,8 +70,8 @@ def register():
         existing_user = User.query.filter_by(username=username).first()
         if existing_user:
             return redirect('/register')
-
-        new_user = User(username=username, password=password, role=user_role)
+        hashed_password = generate_password_hash(password)
+        new_user = User(username=username, password=hashed_password, role=user_role)
         db.session.add(new_user)
         db.session.commit()
         return redirect('/')
@@ -68,6 +80,7 @@ def register():
 
 @app.route('/artist/<username>', methods=['GET', 'POST'])
 def artist_portal(username):
+
     artist_user = User.query.filter_by(username=username, role='artist').first_or_404()
     
     if request.method == 'POST':

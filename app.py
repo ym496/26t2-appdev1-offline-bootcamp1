@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, session
 from werkzeug.security import generate_password_hash
 import os
 
@@ -6,7 +6,7 @@ from application.models import db, User
 
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///music.db"
-
+app.secret_key = "top secretkey"
 db.init_app(app)
 
 with app.app_context():

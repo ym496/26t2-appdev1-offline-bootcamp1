@@ -1,5 +1,5 @@
 from app import app, db, User, Song, Playlist, PlaylistTrack
-
+from werkzeug.security import generate_password_hash
 def seed_database():
     print("⏳ Opening database session workspace...")
     
@@ -10,9 +10,9 @@ def seed_database():
         db.create_all()
         
         print("🌱 Injecting core user accounts...")
-        admin = User(username="admin", password="admin", role="admin")
-        artist = User(username="artist", password="123", role="artist")
-        listener = User(username="ym496", password="123", role="listener")
+        admin = User(username="admin", password=generate_password_hash("admin"), role="admin")
+        artist = User(username="artist", password=generate_password_hash("123"), role="artist")
+        listener = User(username="ym496", password=generate_password_hash("123"), role="listener")
         
         db.session.add_all([admin, artist, listener])
         db.session.commit() 

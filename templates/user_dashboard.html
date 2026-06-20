@@ -8,6 +8,12 @@
         <p>Account Role: <strong>Listener</strong> | Member Status: <em>{{ profile.tier }}</em></p>
     </div>
 
+<form method="GET" action="/dashboard/{{ profile.name }}" style="margin-bottom: 20px;">
+        <input type="text" name="q" value="{{ current_search }}" placeholder="Search by song title...">
+        <button type="submit">Search</button>
+        <a href="/dashboard/{{ profile.name }}"><button type="button">Clear</button></a>
+    </form>
+
     <section>
         <h3>Your Favorite Tracks</h3>
         <table border="1" cellpadding="8">
